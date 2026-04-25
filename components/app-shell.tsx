@@ -13,6 +13,7 @@ import {
   Shield, 
   LogOut 
 } from "lucide-react";
+import { Chatbot } from "@/components/chatbot";
 
 const nav = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -39,8 +40,8 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </h2>
         <nav className="flex-1 space-y-2">
           {nav.map(({ label, href, icon: Icon }) => (
-            <Link key={href} className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition-all hover:bg-white/60 hover:text-teal-700 hover:shadow-sm" href={href}>
-              <Icon className="h-5 w-5 text-slate-400 transition-colors group-hover:text-teal-600" />
+            <Link key={href} className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 transition-all hover:bg-white/80 hover:text-teal-700 hover:shadow-sm" href={href}>
+              <Icon className="h-5 w-5 text-slate-500 transition-colors group-hover:text-teal-600" />
               {label}
             </Link>
           ))}
@@ -49,12 +50,12 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       
       <div className="relative z-10 flex flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-slate-200/50 glass px-8 py-4 shadow-sm">
-          <div className="font-medium text-slate-700 flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 text-teal-700 font-bold">
+          <div className="font-bold text-slate-800 flex items-center gap-3">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 text-teal-700 font-bold shadow-sm">
               {session?.user?.name?.[0] || "U"}
             </span>
             {session?.user?.name} 
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500">
+            <span className="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-bold text-slate-600 shadow-sm">
               {session?.user?.role}
             </span>
           </div>
@@ -64,7 +65,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
               await signOut({ redirectTo: "/" });
             }}
           >
-            <button className="flex items-center gap-2 rounded-lg border border-slate-200/60 bg-white/50 px-4 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-100" type="submit">
+            <button className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white/80 px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-200" type="submit">
               <LogOut className="h-4 w-4" />
               Sign out
             </button>
@@ -74,6 +75,8 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+      
+      <Chatbot />
     </div>
   );
 }

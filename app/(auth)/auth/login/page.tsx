@@ -42,18 +42,18 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Log in</h1>
+      <h1 className="text-2xl font-bold text-slate-900">Log in</h1>
       
-      <div className="flex border-b">
+      <div className="flex border-b border-slate-300">
         <button
-          className={`flex-1 pb-2 ${activeTab === "user" ? "border-b-2 border-teal-600 font-medium" : "text-gray-500"}`}
+          className={`flex-1 pb-2 transition-colors ${activeTab === "user" ? "border-b-2 border-teal-600 font-bold text-slate-900" : "text-slate-600 font-medium hover:text-slate-800"}`}
           onClick={() => setActiveTab("user")}
           type="button"
         >
           Quick Access
         </button>
         <button
-          className={`flex-1 pb-2 ${activeTab === "staff" ? "border-b-2 border-teal-600 font-medium" : "text-gray-500"}`}
+          className={`flex-1 pb-2 transition-colors ${activeTab === "staff" ? "border-b-2 border-teal-600 font-bold text-slate-900" : "text-slate-600 font-medium hover:text-slate-800"}`}
           onClick={() => setActiveTab("staff")}
           type="button"
         >
@@ -63,17 +63,17 @@ export default function LoginPage() {
 
       {activeTab === "user" ? (
         <form className="space-y-4" onSubmit={onUserSubmit}>
-          <p className="text-sm text-gray-500">Just enter your name to access your wellness dashboard.</p>
-          <input className="w-full rounded border p-2" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} disabled={loading} />
-          <button className="w-full rounded bg-teal-600 p-2 text-white disabled:opacity-50" type="submit" disabled={loading}>
+          <p className="text-sm font-medium text-slate-700">Just enter your name to access your wellness dashboard.</p>
+          <input className="w-full rounded-xl border border-slate-300 bg-white/80 p-3 text-slate-900 placeholder-slate-400 shadow-sm focus:border-teal-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} disabled={loading} />
+          <button className="w-full rounded-xl bg-teal-600 p-3 font-semibold text-white shadow-md transition-all hover:bg-teal-700 active:scale-[0.98] disabled:opacity-50" type="submit" disabled={loading}>
             {loading ? "Loading..." : "Enter Dashboard"}
           </button>
         </form>
       ) : (
         <form className="space-y-4" onSubmit={onStaffSubmit}>
-          <input className="w-full rounded border p-2" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
-          <input className="w-full rounded border p-2" placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
-          <button className="w-full rounded bg-teal-600 p-2 text-white disabled:opacity-50" type="submit" disabled={loading}>
+          <input className="w-full rounded-xl border border-slate-300 bg-white/80 p-3 text-slate-900 placeholder-slate-400 shadow-sm focus:border-teal-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
+          <input className="w-full rounded-xl border border-slate-300 bg-white/80 p-3 text-slate-900 placeholder-slate-400 shadow-sm focus:border-teal-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500" placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
+          <button className="w-full rounded-xl bg-teal-600 p-3 font-semibold text-white shadow-md transition-all hover:bg-teal-700 active:scale-[0.98] disabled:opacity-50" type="submit" disabled={loading}>
             {loading ? "Loading..." : "Log in"}
           </button>
         </form>
