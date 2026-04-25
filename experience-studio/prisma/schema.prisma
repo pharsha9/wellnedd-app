@@ -1,0 +1,498 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Enums ---
+
+enum WorkspaceType {
+  CREATOR
+  AGENCY
+  BRAND
+  PRODUCT_TEAM
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum SocialPlatform {
+  INSTAGRAM
+  YOUTUBE
+  TIKTOK
+  LINKEDIN
+  TWITTER
+  FACEBOOK
+  OTHER
+}
+
+enum ContentStatus {
+  BACKLOG
+  IN_PROGRESS
+  READY
+  ARCHIVED
+}
+
+enum IdeaType {
+  POST
+  THREAD
+  VIDEO
+  LIVE
+  STORY
+  ARTICLE
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  DOC
+  SNIPPET
+}
+
+enum CampaignStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+enum InboxSourceType {
+  COMMENT
+  DM
+  MENTION
+  REPLY
+}
+
+enum InboxStatus {
+  UNREAD
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum ExperimentStatus {
+  DRAFT
+  RUNNING
+  PAUSED
+  COMPLETED
+}
+
+enum SurveyTriggerType {
+  INLINE
+  EMAIL
+  LINK
+}
+
+enum SurveyStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum QuestionType {
+  TEXT
+  RATING
+  MULTIPLE_CHOICE
+}
+
+enum TaskType {
+  CONTENT
+  CAMPAIGN
+  EXPERIMENT
+  GENERAL
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+// --- Models ---
+
+model User {
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  hashedPassword String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  handle         String?
+  timezone       String?   @default("UTC")
+  bio            String?
+
+  workspaces     WorkspaceMember[]
+  createdIdeas   ContentIdea[]
+  assignedTasks  Task[]            @relation("AssignedTasks")
+  createdTasks   Task[]            @relation("CreatedTasks")
+  comments       Comment[]
+  notifications  Notification[]
+}
+
+model Workspace {
+  id          String          @id @default(cuid())
+  name        String
+  slug        String          @unique
+  type        WorkspaceType   @default(CREATOR)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  members     WorkspaceMember[]
+  socialAccounts SocialAccount[]
+  ideas       ContentIdea[]
+  assets      MediaAsset[]
+  campaigns   Campaign[]
+  posts       ContentPost[]
+  inboxItems  InboxItem[]
+  audienceSegments AudienceSegment[]
+  events      ExperienceEvent[]
+  profiles    ExperienceUserProfile[]
+  experiments ExperienceExperiment[]
+  surveys     Survey[]
+  tasks       Task[]
+  comments    Comment[]
+  templates   Template[]
+  notifications Notification[]
+  exposures   ExperienceExposure[]
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(EDITOR)
+  invitedAt   DateTime      @default(now())
+  joinedAt    DateTime?
+
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+model SocialAccount {
+  id          String         @id @default(cuid())
+  workspaceId String
+  platform    SocialPlatform
+  displayName String
+  handle      String
+  avatarUrl   String?
+  accessStatus String        @default("MOCK_CONNECTED")
+  metadata    Json?          // { followers: 1000, etc }
+
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  posts       ContentPost[]
+  inboxItems  InboxItem[]
+}
+
+model ContentIdea {
+  id          String        @id @default(cuid())
+  workspaceId String
+  title       String
+  description String?
+  status      ContentStatus @default(BACKLOG)
+  tags        Json?         // String[]
+  ideaType    IdeaType      @default(POST)
+  impactScore Int           @default(3)
+  effortScore Int           @default(3)
+  createdByUserId String
+
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  creator     User          @relation(fields: [createdByUserId], references: [id])
+  posts       ContentPost[]
+
+  @@index([workspaceId, status])
+}
+
+model MediaAsset {
+  id          String    @id @default(cuid())
+  workspaceId String
+  type        AssetType @default(IMAGE)
+  name        String
+  url         String
+  description String?
+  tags        Json?     // String[]
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Campaign {
+  id          String         @id @default(cuid())
+  workspaceId String
+  name        String
+  objective   String?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      CampaignStatus @default(PLANNED)
+  budget      Float?
+
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  posts       ContentPost[]
+}
+
+model ContentPost {
+  id              String         @id @default(cuid())
+  workspaceId     String
+  campaignId      String?
+  socialAccountId String?
+  ideaId          String?
+  platform        SocialPlatform
+  contentText     String
+  mediaAssetIds   Json?          // String[]
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  status          PostStatus     @default(DRAFT)
+  permalink       String?
+  performanceSummary Json?       // { engagement: 0, clicks: 0, etc }
+
+  workspace       Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  campaign        Campaign?      @relation(fields: [campaignId], references: [id])
+  socialAccount   SocialAccount? @relation(fields: [socialAccountId], references: [id])
+  idea            ContentIdea?   @relation(fields: [ideaId], references: [id])
+  metrics         EngagementMetric[]
+
+  @@index([workspaceId, status])
+}
+
+model EngagementMetric {
+  id            String      @id @default(cuid())
+  contentPostId String
+  metricDate    DateTime
+  impressions   Int         @default(0)
+  reach         Int         @default(0)
+  likes         Int         @default(0)
+  comments      Int         @default(0)
+  shares        Int         @default(0)
+  saves         Int         @default(0)
+  clicks        Int         @default(0)
+  profileVisits Int         @default(0)
+  followerChange Int        @default(0)
+
+  post          ContentPost @relation(fields: [contentPostId], references: [id], onDelete: Cascade)
+
+  @@index([contentPostId, metricDate])
+}
+
+model InboxItem {
+  id              String          @id @default(cuid())
+  workspaceId     String
+  socialAccountId String
+  sourceType      InboxSourceType
+  platform        SocialPlatform
+  externalId      String
+  authorHandle    String
+  authorAvatarUrl String?
+  content         String
+  receivedAt      DateTime        @default(now())
+  status          InboxStatus     @default(UNREAD)
+  assignedToUserId String?
+
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  socialAccount   SocialAccount   @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+}
+
+model AudienceSegment {
+  id          String    @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  criteria    Json      // Query description
+  sizeEstimate Int      @default(0)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model ExperienceEvent {
+  id          String    @id @default(cuid())
+  workspaceId String
+  userKey     String
+  eventName   String
+  properties  Json?
+  occurredAt  DateTime  @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, eventName, occurredAt])
+  @@index([userKey])
+}
+
+model ExperienceUserProfile {
+  id          String    @id @default(cuid())
+  workspaceId String
+  userKey     String    @unique
+  traits      Json?
+  firstSeenAt DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, userKey])
+}
+
+model ExperienceExperiment {
+  id          String           @id @default(cuid())
+  workspaceId String
+  name        String
+  key         String
+  description String?
+  status      ExperimentStatus @default(DRAFT)
+  primaryMetric String
+  secondaryMetrics Json?       // String[]
+  startDate   DateTime?
+  endDate     DateTime?
+
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  variants    ExperienceVariant[]
+  exposures   ExperienceExposure[]
+  snapshots   ExperienceMetricSnapshot[]
+
+  @@unique([workspaceId, key])
+}
+
+model ExperienceVariant {
+  id                String    @id @default(cuid())
+  experimentId      String
+  key               String    // "A", "B"
+  name              String
+  description       String?
+  trafficAllocation Float     @default(0.5)
+
+  experiment        ExperienceExperiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  exposures         ExperienceExposure[]
+  snapshots         ExperienceMetricSnapshot[]
+}
+
+model ExperienceExposure {
+  id            String    @id @default(cuid())
+  workspaceId   String
+  experimentId  String
+  variantId     String
+  userKey       String
+  occurredAt    DateTime  @default(now())
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  experiment    ExperienceExperiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  variant       ExperienceVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([experimentId, variantId])
+}
+
+model ExperienceMetricSnapshot {
+  id            String    @id @default(cuid())
+  experimentId  String
+  variantId     String
+  metricName    String
+  value         Float
+  atDate        DateTime
+
+  experiment    ExperienceExperiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  variant       ExperienceVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+}
+
+model Survey {
+  id          String           @id @default(cuid())
+  workspaceId String
+  title       String
+  description String?
+  triggerType SurveyTriggerType @default(LINK)
+  status      SurveyStatus     @default(DRAFT)
+
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  questions   SurveyQuestion[]
+  responses   SurveyResponse[]
+}
+
+model SurveyQuestion {
+  id          String       @id @default(cuid())
+  surveyId    String
+  order       Int
+  type        QuestionType @default(TEXT)
+  questionText String
+  options     Json?        // For multiple choice
+
+  survey      Survey       @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+}
+
+model SurveyResponse {
+  id            String   @id @default(cuid())
+  surveyId      String
+  respondentKey String?
+  submittedAt   DateTime @default(now())
+  answers       Json     // Map questionId -> answer
+
+  survey        Survey   @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  workspaceId String
+  title       String
+  description String?
+  type        TaskType   @default(GENERAL)
+  status      TaskStatus @default(TODO)
+  dueDate     DateTime?
+  assigneeId  String?
+  createdByUserId String
+  relatedEntityType String? // e.g. "CONTENT_POST"
+  relatedEntityId   String?
+
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignee    User?      @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  creator     User       @relation("CreatedTasks", fields: [createdByUserId], references: [id])
+
+  @@index([workspaceId, status])
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  workspaceId String
+  authorId    String
+  body        String
+  createdAt   DateTime  @default(now())
+  relatedEntityType String
+  relatedEntityId   String
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Template {
+  id          String    @id @default(cuid())
+  workspaceId String?   // Null for global templates
+  type        String    // e.g. "CONTENT_BRIEF"
+  name        String
+  description String?
+  payload     Json
+
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  userId      String
+  workspaceId String?
+  type        String
+  data        Json
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
