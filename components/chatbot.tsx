@@ -28,25 +28,35 @@ export function Chatbot() {
 
   const getBotResponse = (text: string) => {
     const lower = text.toLowerCase();
-    if (lower.match(/\b(hi|hello|hey|greetings)\b/)) {
-      return "Hello! How can I support your wellness journey today?";
-    }
-    if (lower.match(/\b(goal|goals|target)\b/)) {
-      return "You can track your active goals in the 'Goals' tab on the left. Keeping a daily streak helps build momentum!";
-    }
-    if (lower.match(/\b(program|programs|stress|sleep)\b/)) {
-      return "We offer structured programs like the '4-Week Stress Reset' and 'Sleep Better'. Check the Programs section!";
-    }
-    if (lower.match(/\b(coach|appointment|meeting|session)\b/)) {
-      return "You can schedule sessions and message your coach directly in the Coaching tab.";
-    }
-    if (lower.match(/\b(habit|habits|routine)\b/)) {
-      return "Habits are the foundation of wellness. Log your daily habits in the Habits tab to earn points!";
-    }
-    if (lower.match(/\b(reward|rewards|point|points)\b/)) {
-      return "You earn points by logging check-ins and completing habits. Redeem them in the Rewards tab!";
-    }
-    return "I'm a simple wellness bot. Try asking me about your goals, habits, programs, or coaching!";
+    if (lower.match(/\b(hi|hello|hey|greetings|good\s*(morning|evening|afternoon))\b/))
+      return "Hello! 👋 I'm your WellNedd wellness assistant. Ask me about goals, habits, programs, recipes, vaccines, blogs, or your wellbeing!";
+    if (lower.match(/\b(goal|goals|target|milestone)\b/))
+      return "📎 You can track active goals in the **Goals** tab. Each goal shows a progress bar with days remaining. Achieving one earns +100 points!";
+    if (lower.match(/\b(habit|habits|routine|streak)\b/))
+      return "🔥 Build habits in the **Habits** section. A 7-day streak earns +50 bonus points. Your calendar grid shows your consistency!";
+    if (lower.match(/\b(program|programs|workout\s*series|yoga\s*series|immunity\s*guide)\b/))
+      return "🎯 Browse programs under **Programs** — we have Workout Series, Yoga, Immunity Guides, Sleep Protocol, and more! Enrolling earns +20 points.";
+    if (lower.match(/\b(coach|coaching|appointment|session|book)\b/))
+      return "💬 Book a **Fitness** or **Meditation Coaching** session in the Coaching section. You can also message your coach directly!";
+    if (lower.match(/\b(tracker|steps|water|meal|reminder|hydrat|vitamin|yoga|sleep|meditation)\b/))
+      return "📊 Head to the **Tracker** page to log your daily steps, water glasses, meals, and habit reminders. Each reminder earns +5 points!";
+    if (lower.match(/\b(check.?in|mood|stress|energy|focus|feeling|emotion)\b/))
+      return "🧠 Do your daily **Check-in** to log your mood, stress, sleep, and energy. The radar chart shows your wellness snapshot. Earns +10 points!";
+    if (lower.match(/\b(recipe|immunity|booster|protein|meal\s*plan|food|eat|nutrition)\b/))
+      return "🥗 Visit **Nutrition & Recipes** for immunity boosters, protein recipes, a 7-day meal planner, and myth-busting health facts!";
+    if (lower.match(/\b(myth|misconception|fake|false|truth|misinformation)\b/))
+      return "❌ Check the **Nutrition & Recipes** section > 'Busting Myths' tab — we debunk 6 common health myths like 'fat makes you fat' and 'detox diets work'!";
+    if (lower.match(/\b(vaccine|vaccination|flu|shot|immunity|booster\s*dose)\b/))
+      return "💉 Visit **Vaccine Guide** for recommended vaccines (annual, adult, travel), a checklist to track yours, and answers to common vaccine questions!";
+    if (lower.match(/\b(blog|article|read|health\s*tip|tip|advice)\b/))
+      return "📚 The **Blogs** section has science-backed articles on Sleep, Mindfulness, Gut Health, Zone 2 Cardio, and Chronic Stress. +5 points per article!";
+    if (lower.match(/\b(assess|wellbeing|assessment|quiz|mental|overwhelmed|sustainable)\b/))
+      return "📋 Take a **Wellbeing Assessment** — four short quizzes on your meals, mental-physical health link, lifestyle sustainability, and work stress. +5 pts each!";
+    if (lower.match(/\b(reward|redeem|point|points|shop|marketplace|buy)\b/))
+      return "🏆 Your points can be redeemed in the **Rewards Marketplace** for yoga mats, protein shakers, wellness journals, vitamin bundles, and more!";
+    if (lower.match(/\b(point|earn|how|login|daily)\b/))
+      return "⭐ Earn points daily: Login +15, Check-in +10, Habit Reminder +5, Program Enrollment +20, Article +5, 7-day Streak +50, Goal Achieved +100!";
+    return "I'm your WellNedd wellness guide! 🌿 Try asking about: check-ins, habits, programs, tracker, recipes, vaccine guide, blogs, wellbeing assessments, or rewards!";
   };
 
   const handleSend = (e: React.FormEvent) => {
