@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --color-primary: #0d9488; /* teal-600 */
+  --color-primary-dark: #0f766e;
 }
 
 @theme inline {
@@ -14,13 +16,70 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #020617; /* slate-950 */
+    --foreground: #f8fafc;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Background watermark text utility */
+.watermark-bg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 25vw;
+  font-weight: 900;
+  color: rgba(13, 148, 136, 0.04);
+  z-index: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  user-select: none;
+  filter: blur(4px);
+}
+
+/* Abstract vibrant mesh gradient background */
+.vibrant-mesh-bg {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(168, 88%, 85%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(208, 93%, 89%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(271, 81%, 90%, 0.7) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(338, 93%, 89%, 0.7) 0px, transparent 50%);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .vibrant-mesh-bg {
+    background-color: #020617;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(168, 88%, 15%, 0.7) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(208, 93%, 19%, 0.7) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(271, 81%, 20%, 0.7) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(338, 93%, 19%, 0.7) 0px, transparent 50%);
+  }
+  .watermark-bg {
+    color: rgba(13, 148, 136, 0.07); 
+  }
 }

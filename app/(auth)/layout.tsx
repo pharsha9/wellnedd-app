@@ -1,9 +1,18 @@
+"use client";
+import { motion } from "framer-motion";
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-teal-50 to-white p-6">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="relative flex min-h-screen items-center justify-center vibrant-mesh-bg p-6">
+      <div className="watermark-bg">WELLNESS</div>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 w-full max-w-md rounded-2xl glass p-8 shadow-2xl"
+      >
         {children}
-      </div>
+      </motion.div>
     </div>
   );
 }
