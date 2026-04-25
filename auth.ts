@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { trackEngagement } from "@/lib/engagement";
+import { generateDummyDataForUser } from "@/lib/dummyData";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -17,6 +18,42 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   providers: [
     Credentials({
+      id: "user-login",
+      name: "Quick Access",
+      credentials: {
+        name: { label: "Name", type: "text" },
+      },
+      authorize: async (credentials) => {
+        if (!credentials?.name || typeof credentials.name !== "string") return null;
+        
+        const name = credentials.name.trim();
+        const email = `${name.replace(/\s+/g, '').toLowerCase()}@wellnedd.local`;
+        
+        const hash = await bcrypt.hash("password123", 10);
+        const user = await prisma.user.upsert({
+          where: { email },
+          update: {},
+          create: {
+            name,
+            email,
+            hashedPassword: hash,
+            role: "USER",
+          },
+        });
+        
+        await generateDummyDataForUser(user.id);
+        
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+      },
+    }),
+    Credentials({
+      id: "staff-login",
+      name: "Staff Login",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -52,8 +89,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
+        session.user.id = token.id as string;
+        session.user.role = token.role as any;
       }
       return session;
     },
