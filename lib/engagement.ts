@@ -7,6 +7,7 @@ const POINTS_MAP: Record<EngagementType, number> = {
   HABIT_COMPLETED: 2,
   PROGRAM_PROGRESS: 10,
   CONTENT_VIEWED: 1,
+  JOURNAL_ANALYZED: 15,
 };
 
 export function pointsForEvent(type: EngagementType): number {

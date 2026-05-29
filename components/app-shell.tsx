@@ -20,6 +20,7 @@ const NAV_GROUPS = [
   {
     label: "Wellness",
     items: [
+      { label: "Mind Sanctuary", href: "/mental-health", icon: Brain },
       { label: "Programs",     href: "/programs",     icon: List },
       { label: "Habits",       href: "/habits",       icon: Activity },
       { label: "Coaching",     href: "/coaching",     icon: Video },
