@@ -42,6 +42,32 @@ The Mind Sanctuary integrates advanced cognitive behavioral therapy (CBT) models
 
 ---
 
+## 💡 Gemma 4 AI Capabilities & Project Integration
+
+### Why Gemma 4?
+Google's **Gemma 4** is an open-weight, instruction-tuned dense language model optimized for high-performance developer tasks, coding, and empathetic reasoning. In mental health and wellness applications, leveraging an open-weight model like Gemma provides distinct advantages:
+*   **Data Privacy & Customizability**: Can be hosted privately within a Google Cloud VPC (using Vertex AI) to guarantee data isolation for sensitive mental health logs.
+*   **Instruction-Tuned Empathetic Reasoning**: Excels at structured, JSON-based outputs and roleplay instructions, allowing for specialized CBT frameworks.
+*   **Low Latency & High Performance**: Tailored for fast client-facing response generation.
+
+### How We Leverage Gemma 4 in WellNedd
+We leverage Gemma 4 dynamically across 4 core cognitive wellness use cases:
+
+1.  **CBT Journal Classification & Sentiment Extraction**:
+    *   *Implementation*: `analyzeJournal(content)` in [`lib/gemma.ts`](file:///Users/harshavardhanreddy/Documents/wellnedd%20app/lib/gemma.ts).
+    *   *Use Case*: The model receives unstructured raw thoughts, acts as an expert therapist, extracts structured JSON data containing emotions and triggers, detects specific cognitive distortions (e.g. *Catastrophizing*, *Mind Reading*), and produces reframing suggestions.
+2.  **Dynamic Bedtime Story Synthesis**:
+    *   *Implementation*: `generateSleepcast(worryText, theme, style)` in [`lib/gemma.ts`](file:///Users/harshavardhanreddy/Documents/wellnedd%20app/lib/gemma.ts).
+    *   *Use Case*: Generates narrative sleep induction stories. It takes user stress points and dynamically weaves them into peaceful, slow-paced stories designed to help them wind down.
+3.  **Crisis De-escalation & Grounding Prompts**:
+    *   *Implementation*: SOS Grounding Space custom scripting.
+    *   *Use Case*: Creates immediate soothing scripts configured to address acute panic or burnout, guiding users through customized deep breathing and muscle relaxation cues.
+4.  **Multi-Role Wellness Companion Sidebar**:
+    *   *Implementation*: `chatWithGemma(messages, focusArea)` in [`lib/gemma.ts`](file:///Users/harshavardhanreddy/Documents/wellnedd%20app/lib/gemma.ts).
+    *   *Use Case*: Configures dynamic system prompts to alter Gemma's focus to act as a *CBT Coach*, *Grounding Guide*, *Gratitude Trainer*, or *Self-Compassion Companion* on the fly.
+
+---
+
 ## 🛠️ Tech Stack & Domain Architecture
 
 *   **Framework**: Next.js 16 (App Router) + React 19 (compiled with Turbopack)
